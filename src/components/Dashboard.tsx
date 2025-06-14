@@ -2,13 +2,13 @@ import React from 'react';
 import { Ship, Users, TrendingUp, MapPin, Calendar, Anchor } from 'lucide-react';
 import { User } from '../types';
 import { ThemeToggle } from './ThemeToggle';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardProps {
   user: User;
-  onNavigate: (screen: string) => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const stats = {
     shipowner: {
       ships: 12,
@@ -23,6 +23,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate }) => {
       volume: '1.2M MT'
     }
   };
+
+  const navigate = useNavigate();
 
   const currentStats = stats[user.type];
 
@@ -45,7 +47,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate }) => {
                 <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{user.type}</p>
               </div>
               <button
-                onClick={() => onNavigate('profile')}
+                onClick={() => navigate('profile')}
                 className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center"
               >
                 <span className="text-blue-800 dark:text-blue-300 font-semibold">{user.name[0]}</span>
@@ -135,7 +137,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate }) => {
               }
             </p>
             <button
-              onClick={() => onNavigate('swipe')}
+              onClick={() => navigate('/swipe')}
               className="bg-white text-blue-600 dark:text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-100 transition-colors"
             >
               Start Swiping
@@ -148,7 +150,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate }) => {
               View real-time vessel positions and port activities worldwide
             </p>
             <button
-              onClick={() => onNavigate('map')}
+              onClick={() => navigate('map')}
               className="bg-white text-cyan-600 dark:text-cyan-700 px-6 py-3 rounded-lg font-semibold hover:bg-cyan-50 dark:hover:bg-gray-100 transition-colors flex items-center gap-2"
             >
               <MapPin className="w-5 h-5" />
