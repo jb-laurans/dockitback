@@ -1,0 +1,5 @@
+curl -X POST http://localhost:3001/api/auth/login -H "Content-Type: application/json" -d '{"email":"sarah@balticshipping.com","password":"password123"}' 
+
+curl http://localhost:3001/api/ships   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0OTkwNjQzNiwiZXhwIjoxNzUwNTExMjM2fQ.wNH2Vzzqc_JzLJ1q2JDsnSmYms3D0Q2pM0bs7mCCV4o"
+
+$ curl http://localhost:3001/health
