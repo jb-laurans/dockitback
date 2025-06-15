@@ -54,4 +54,22 @@ export class User {
   static async verifyPassword(plainPassword, hashedPassword) {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
+
+    static async getDashboard(userId) {
+    try {
+      const [shipsRes, matchesRes] = await Promise.all([
+        pool.query('SELECT COUNT(*) FROM ships WHERE owner_id = $1', [userId]),
+        pool.query('SELECT COUNT(*) FROM matches WHERE user_id = $1', [userId])
+      ]);
+
+      return {
+        ships: parseInt(shipsRes.rows[0].count, 10),
+        matches: parseInt(matchesRes.rows[0].count, 10)
+      };
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      throw new Error('Failed to fetch dashboard data');
+    }
+  }
+
 }

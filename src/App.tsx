@@ -8,8 +8,9 @@ import { ShipDetailScreen } from './components/ShipDetailScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProvider, useUser } from './contexts/UserContext';
+import { MyShipsScreen } from './components/MyShipsScreen';
 
-type Screen = 'login' | 'dashboard' | 'swipe' | 'matches' | 'map' | 'ship-detail' | 'profile';
+type Screen = 'login' | 'dashboard' | 'swipe' | 'matches' | 'map' | 'ship-detail' | 'profile' | 'my-ships';
 
 function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('login');
@@ -63,6 +64,9 @@ function AppContent() {
       
       case 'profile':
         return isAuthenticated ? <ProfileScreen onNavigate={handleNavigate} /> : <LoginScreen onLogin={handleLogin} />;
+      
+      case 'my-ships':
+        return isAuthenticated ? <MyShipsScreen onNavigate={handleNavigate} /> : <LoginScreen onLogin={handleLogin} />;
       
       default:
         return isAuthenticated ? <Dashboard onNavigate={handleNavigate} /> : <LoginScreen onLogin={handleLogin} />;

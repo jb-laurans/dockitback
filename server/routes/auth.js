@@ -122,4 +122,14 @@ router.put('/profile', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/dashboard/shipowner', authenticateToken, async (req, res) => {
+  try {
+    const dashboardData = await User.getDashboard(req.user.id);
+    console.log(dashboardData);
+    res.json(dashboardData);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;
