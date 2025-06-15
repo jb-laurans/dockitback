@@ -49,8 +49,8 @@ function AppContent() {
       case 'dashboard':
         return isAuthenticated ? <Dashboard onNavigate={handleNavigate} /> : <LoginScreen onLogin={handleLogin} />;
       
-      // case 'swipe':
-      //   return isAuthenticated ? <SwipeScreen onNavigate={handleNavigate} onMatch={handleMatch} /> : <LoginScreen onLogin={handleLogin} />;
+      case 'swipe':
+        return isAuthenticated ? <SwipeScreen onNavigate={handleNavigate} onMatch={handleMatch} /> : <LoginScreen onLogin={handleLogin} />;
       
       case 'matches':
         return isAuthenticated ? <MatchesScreen onNavigate={handleNavigate} /> : <LoginScreen onLogin={handleLogin} />;

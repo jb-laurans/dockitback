@@ -6,14 +6,16 @@ import { ThemeToggle } from './ThemeToggle';
 import { useNavigate } from 'react-router-dom';
 
 interface SwipeScreenProps {
-  onMatch: (shipId: string) => void;
+   onMatch: (shipId: string) => void;
+   onNavigate: (screen: string) => void;
+  
 }
 
-export const SwipeScreen: React.FC<SwipeScreenProps> = ({ onMatch }) => {
+export const SwipeScreen: React.FC<SwipeScreenProps> = ({ onMatch, onNavigate }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [ships, setShips] = useState<Ship[]>(mockShips);
   const [isAnimating, setIsAnimating] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const currentShip = ships[currentIndex];
 
@@ -54,7 +56,7 @@ export const SwipeScreen: React.FC<SwipeScreenProps> = ({ onMatch }) => {
               Review Again
             </button>
             <button
-              onClick={() => navigate('matches')}
+              onClick={() => onNavigate('matches')}
               className="block w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               View Matches
@@ -75,7 +77,7 @@ export const SwipeScreen: React.FC<SwipeScreenProps> = ({ onMatch }) => {
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 px-4 py-4">
         <div className="flex items-center justify-between">
           <button
-            onClick={() => navigate('dashboard')}
+            onClick={() => onNavigate('dashboard')}
             className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
             ← Back
@@ -84,7 +86,7 @@ export const SwipeScreen: React.FC<SwipeScreenProps> = ({ onMatch }) => {
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <button
-              onClick={() => navigate('matches')}
+              onClick={() => onNavigate('matches')}
               className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
             >
               Matches
@@ -170,7 +172,7 @@ export const SwipeScreen: React.FC<SwipeScreenProps> = ({ onMatch }) => {
             </button>
             
             <button
-              onClick={() => navigate('ship-detail')}
+              onClick={() => onNavigate('ship-detail')}
               className="w-16 h-16 bg-white dark:bg-gray-800 border-2 border-blue-200 dark:border-blue-800 rounded-full flex items-center justify-center hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors shadow-lg"
             >
               <Info className="w-8 h-8 text-blue-500 dark:text-blue-400" />
