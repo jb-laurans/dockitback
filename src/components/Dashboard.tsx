@@ -14,24 +14,45 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     return <div>Loading...</div>;
   }
 
-  const stats = {
-    shipowner: {
-      ships: 12,
-      matches: 38,
-      activeVoyages: 7,
-      revenue: '$2.4M'
-    },
-    charterer: {
-      cargos: 24,
-      matches: 42,
-      activeTrades: 9,
-      volume: '1.2M MT'
-    }
-  };
+  type ShipownerStats = {
+  ships: number;
+  matches: number;
+  activeVoyages: number;
+  revenue: string;
+};
+
+type ChartererStats = {
+  cargos: number;
+  matches: number;
+  activeTrades: number;
+  volume: string;
+};
+
+const stats: {
+  shipowner: ShipownerStats;
+  charterer: ChartererStats;
+} = {
+  shipowner: {
+    ships: 12,
+    matches: 38,
+    activeVoyages: 7,
+    revenue: '$2.4M',
+  },
+  charterer: {
+    cargos: 24,
+    matches: 42,
+    activeTrades: 9,
+    volume: '1.2M MT',
+  },
+};
+
+
+
 
   const currentStats = stats[user.type];
+  console.log(currentStats)
 
-  console.log(user)
+  // console.log(user)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -94,7 +115,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 <Ship className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {user.type === 'shipowner' ? currentStats.ships : currentStats.cargos}
+                
+                {user.type === 'shipowner' ? stats.shipowner.ships : stats.charterer.cargos}
               </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 font-medium">
@@ -118,7 +140,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 <TrendingUp className="w-6 h-6 text-orange-600 dark:text-orange-400" />
               </div>
               <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {user.type === 'shipowner' ? currentStats.activeVoyages : currentStats.activeTrades}
+                {user.type === 'shipowner' ? stats.shipowner.activeVoyages : stats.charterer.activeTrades}
+
               </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 font-medium">
@@ -132,7 +155,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
               <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {user.type === 'shipowner' ? currentStats.revenue : currentStats.volume}
+                {user.type === 'shipowner' ? stats.shipowner.revenue : stats.charterer.volume}
               </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 font-medium">
