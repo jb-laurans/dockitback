@@ -1,14 +1,19 @@
 import React from 'react';
 import { Ship, Users, TrendingUp, MapPin, Calendar, Anchor } from 'lucide-react';
-import { User } from '../types';
 import { ThemeToggle } from './ThemeToggle';
-import { useNavigate } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 
 interface DashboardProps {
-  user: User;
+  onNavigate: (screen: string) => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
+  const { user, logout } = useUser();
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   const stats = {
     shipowner: {
       ships: 12,
@@ -24,9 +29,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     }
   };
 
-  const navigate = useNavigate();
-
   const currentStats = stats[user.type];
+
+  console.log(user)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -45,9 +50,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               <div className="text-right">
                 <p className="font-semibold text-gray-900 dark:text-gray-100">{user.name}</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{user.type}</p>
+                {user.company && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{user.company}</p>
+                )}
               </div>
               <button
-                onClick={() => navigate('profile')}
+                onClick={() => onNavigate('profile')}
                 className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center"
               >
                 <span className="text-blue-800 dark:text-blue-300 font-semibold">{user.name[0]}</span>
@@ -69,6 +77,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               : 'Find the perfect vessels for your cargo requirements'
             }
           </p>
+          {user.verified && (
+            <div className="mt-2">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300">
+                ✓ Verified Account
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Stats cards */}
@@ -137,7 +152,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               }
             </p>
             <button
-              onClick={() => navigate('/swipe')}
+              onClick={() => onNavigate('swipe')}
               className="bg-white text-blue-600 dark:text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-100 transition-colors"
             >
               Start Swiping
@@ -150,7 +165,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               View real-time vessel positions and port activities worldwide
             </p>
             <button
-              onClick={() => navigate('map')}
+              onClick={() => onNavigate('map')}
               className="bg-white text-cyan-600 dark:text-cyan-700 px-6 py-3 rounded-lg font-semibold hover:bg-cyan-50 dark:hover:bg-gray-100 transition-colors flex items-center gap-2"
             >
               <MapPin className="w-5 h-5" />

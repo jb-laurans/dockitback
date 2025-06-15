@@ -1,26 +1,38 @@
 import React, { useState } from 'react';
 import { ArrowLeft, User, Building, Mail, Bell, Globe, Shield, LogOut, Edit2 } from 'lucide-react';
-import { User as UserType } from '../types';
-import { mockUser } from '../data/mockData';
 import { ThemeToggle } from './ThemeToggle';
+import { useUser } from '../contexts/UserContext';
 
 interface ProfileScreenProps {
-  user: UserType;
   onNavigate: (screen: string) => void;
-  onLogout: () => void;
 }
 
-export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onNavigate, onLogout }) => {
+export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
+  const { user, logout } = useUser();
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    company: user.company
+    name: user?.name || '',
+    email: user?.email || '',
+    company: user?.company || ''
   });
 
-  const handleSave = () => {
-    // In real app, save to backend
-    setEditMode(false);
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  const handleSave = async () => {
+    try {
+      // In real app, save to backend
+      setEditMode(false);
+      // You can implement API call here to update user profile
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    onNavigate('login');
   };
 
   return (
@@ -75,13 +87,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onNavigate, 
                     value={formData.company}
                     onChange={(e) => setFormData({...formData, company: e.target.value})}
                     className="w-full text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Company name"
                   />
                 </div>
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{user.name}</h2>
                   <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
-                  <p className="text-gray-600 dark:text-gray-400">{user.company}</p>
+                  {user.company && <p className="text-gray-600 dark:text-gray-400">{user.company}</p>}
                 </>
               )}
               <div className="flex items-center gap-2 mt-3">
@@ -193,7 +206,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onNavigate, 
         {/* Logout */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700">
           <button
-            onClick={onLogout}
+            onClick={handleLogout}
             className="w-full flex items-center gap-4 p-6 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400"
           >
             <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
