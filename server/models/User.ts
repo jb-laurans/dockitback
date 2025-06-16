@@ -14,11 +14,13 @@ export interface UserType {
 
 export class User {
   static async create({ name, email, password, type, company }: Partial<UserType>): Promise<UserType> {
+    const bcrypt = await import('bcryptjs');
+    const hashedPassword = password ? await bcrypt.hash(password, 12) : undefined;
     const result = await pool.query(
       `INSERT INTO users (name, email, password, type, company, verified)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [name, email, password, type, company, true]
+      [name, email, hashedPassword, type, company, true]
     );
     return result.rows[0];
   }

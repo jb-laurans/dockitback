@@ -36,11 +36,12 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       company: company || ''
     });
 
+    const { password: _pw, ...userWithoutPassword } = user;
     const token = generateToken(user.id);
 
     res.status(201).json({
       message: 'User created successfully',
-      user,
+      user: userWithoutPassword,
       token
     });
   } catch (error) {
@@ -70,11 +71,12 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    const { password: _pw, ...userWithoutPassword } = user;
     const token = generateToken(user.id);
 
     res.json({
       message: 'Login successful',
-      user,
+      user: userWithoutPassword,
       token
     });
   } catch (error) {
