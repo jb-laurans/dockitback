@@ -1,17 +1,26 @@
-import express from 'express';
-import { Ship } from '../models/Ship.js';
-import { authenticateToken } from '../middleware/auth.js';
+import express, { Request, Response } from 'express';
+import { Ship } from '../models/Ship';
+import { authenticateToken } from '../middleware/auth';
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: number;
+    type: string;
+    company?: string;
+    name: string;
+  };
+}
 
 const router = express.Router();
 
 // Get all ships with optional filters
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const filters = {
-      type: req.query.type,
-      minDwt: req.query.minDwt ? parseInt(req.query.minDwt) : null,
-      maxDwt: req.query.maxDwt ? parseInt(req.query.maxDwt) : null,
-      port: req.query.port
+      type: req.query.type as string,
+      minDwt: req.query.minDwt ? parseInt(req.query.minDwt as string) : undefined,
+      maxDwt: req.query.maxDwt ? parseInt(req.query.maxDwt as string) : undefined,
+      port: req.query.port as string
     };
 
     const ships = await Ship.findAll(filters);
@@ -23,9 +32,9 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Get ship by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const ship = await Ship.findById(req.params.id);
+    const ship = await Ship.findById(Number(req.params.id));
     
     if (!ship) {
       return res.status(404).json({ error: 'Ship not found' });
@@ -39,9 +48,10 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create ship (shipowners only)
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req: Request, res: Response) => {
+  const authenticatedReq = req as AuthenticatedRequest;
   try {
-    if (req.user.type !== 'shipowner') {
+    if (authenticatedReq.user.type !== 'shipowner') {
       return res.status(403).json({ 
         error: 'Only shipowners can create ships' 
       });
@@ -49,8 +59,8 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const shipData = {
       ...req.body,
-      ownerId: req.user.id,
-      owner: req.user.company || req.user.name
+      ownerId: authenticatedReq.user.id,
+      owner: authenticatedReq.user.company || authenticatedReq.user.name
     };
 
     const ship = await Ship.create(shipData);
@@ -65,15 +75,16 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Get user's ships
-router.get('/my/ships', authenticateToken, async (req, res) => {
+router.get('/my/ships', authenticateToken, async (req: Request, res: Response) => {
+  const authenticatedReq = req as AuthenticatedRequest;
   try {
-    if (req.user.type !== 'shipowner') {
+    if (authenticatedReq.user.type !== 'shipowner') {
       return res.status(403).json({ 
         error: 'Only shipowners can view their ships' 
       });
     }
 
-    const ships = await Ship.findByOwnerId(req.user.id);
+    const ships = await Ship.findByOwnerId(authenticatedReq.user.id);
     res.json({ ships });
   } catch (error) {
     console.error('Get user ships error:', error);
@@ -81,4 +92,4 @@ router.get('/my/ships', authenticateToken, async (req, res) => {
   }
 });
 
-export default router;
+export default router; 

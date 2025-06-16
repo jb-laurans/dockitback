@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Ship } from '../types';
-import { useUser } from '../contexts/UserContext'; // si tu as un contexte user
-import { ArrowLeft } from 'lucide-react';
+import { useUser } from '../contexts/useUser'; // si tu as un contexte user
 
 interface MyShipsScreenProps {
   onNavigate: (screen: string) => void;
 }
 
-export const MyShipsScreen: React.FC<MyShipsScreenProps> = ({ onNavigate }) => {
+export const MyShipsScreen: React.FC<MyShipsScreenProps> = () => {
   const { user, token } = useUser();
   const [ships, setShips] = useState<Ship[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +14,7 @@ export const MyShipsScreen: React.FC<MyShipsScreenProps> = ({ onNavigate }) => {
    useEffect(() => {
     if (!user || !token) return;
 
-    fetch(`http://localhost:3001/api/ships/my/ships`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/ships/my/ships`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

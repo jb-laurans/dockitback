@@ -1,4 +1,4 @@
-import pool from '../config/database.js';
+import pool from '../config/database';
 import bcrypt from 'bcryptjs';
 
 const seedData = async () => {
@@ -127,4 +127,4 @@ seedData()
   .catch((error) => {
     console.error('💥 Seeding failed:', error);
     process.exit(1);
-  });
+  }); 

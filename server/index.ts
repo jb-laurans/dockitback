@@ -1,11 +1,12 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
+import * as dotenv from 'dotenv';
 import cors from 'cors';
-import dotenv from 'dotenv';
+
 
 // Import routes
-import authRoutes from './routes/auth.js';
-import shipRoutes from './routes/ships.js';
-import matchRoutes from './routes/matches.js';
+import authRoutes from './routes/auth';
+import shipRoutes from './routes/ships';
+import matchRoutes from './routes/matches';
 
 // Load environment variables
 dotenv.config();
@@ -13,7 +14,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Headers:', sanitizeHeaders(req.headers));
+  next();
+});
+
+function sanitizeHeaders(headers: Record<string, string | string[] | undefined>): Record<string, string | string[] | undefined> {
+  const sensitiveKeys = ['authorization', 'cookie'];
+  return Object.fromEntries(
+    Object.entries(headers).filter(([key]) => !sensitiveKeys.includes(key.toLowerCase()))
+  );
+}
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com'] 
@@ -21,11 +34,13 @@ app.use(cors({
   credentials: true
 }));
 
+
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
@@ -39,7 +54,7 @@ app.use('/api/ships', shipRoutes);
 app.use('/api/matches', matchRoutes);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use('*', (req: Request, res: Response) => {
   res.status(404).json({ 
     error: 'Route not found',
     path: req.originalUrl 
@@ -47,14 +62,14 @@ app.use('*', (req, res) => {
 });
 
 // Global error handler
-app.use((error, req, res, next) => {
+app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   console.error('Global error handler:', error);
-  
-  res.status(error.status || 500).json({
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
-      : error.message,
-    ...(process.env.NODE_ENV !== 'production' && { stack: error.stack })
+  const err = error as { status?: number; message?: string; stack?: string };
+  res.status(err.status || 500).json({
+    error: process.env.NODE_ENV === 'production'
+      ? 'Internal server error'
+      : err.message,
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
   });
 });
 
@@ -66,4 +81,4 @@ app.listen(PORT, () => {
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
-export default app;
+export default app; 

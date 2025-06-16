@@ -1,11 +1,21 @@
-import express from 'express';
-import { Match } from '../models/Match.js';
-import { authenticateToken } from '../middleware/auth.js';
+import express, { Request, Response } from 'express';
+import { Match } from '../models/Match';
+import { authenticateToken } from '../middleware/auth';
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: number;
+    type: string;
+    company?: string;
+    name: string;
+  };
+}
 
 const router = express.Router();
 
 // Create a match (swipe right)
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req: Request, res: Response) => {
+  const authenticatedReq = req as AuthenticatedRequest;
   try {
     const { shipId, cargoId } = req.body;
 
@@ -15,7 +25,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const match = await Match.create({
       shipId,
-      userId: req.user.id,
+      userId: authenticatedReq.user.id,
       cargoId
     });
 
@@ -23,7 +33,7 @@ router.post('/', authenticateToken, async (req, res) => {
       message: 'Match created successfully',
       match
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create match error:', error);
     
     if (error.message === 'Match already exists') {
@@ -35,9 +45,10 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Get user's matches
-router.get('/my', authenticateToken, async (req, res) => {
+router.get('/my', authenticateToken, async (req: Request, res: Response) => {
+  const authenticatedReq = req as AuthenticatedRequest;
   try {
-    const matches = await Match.findByUserId(req.user.id);
+    const matches = await Match.findByUserId(authenticatedReq.user.id);
     res.json({ matches });
   } catch (error) {
     console.error('Get matches error:', error);
@@ -46,7 +57,7 @@ router.get('/my', authenticateToken, async (req, res) => {
 });
 
 // Update match status
-router.put('/:id/status', authenticateToken, async (req, res) => {
+router.put('/:id/status', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { status } = req.body;
     
@@ -56,7 +67,7 @@ router.put('/:id/status', authenticateToken, async (req, res) => {
       });
     }
 
-    const match = await Match.updateStatus(req.params.id, status);
+    const match = await Match.updateStatus(Number(req.params.id), status);
     
     if (!match) {
       return res.status(404).json({ error: 'Match not found' });
@@ -72,4 +83,4 @@ router.put('/:id/status', authenticateToken, async (req, res) => {
   }
 });
 
-export default router;
+export default router; 

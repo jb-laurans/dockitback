@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Heart, X, Info, Anchor, MapPin, Calendar, Truck } from 'lucide-react';
 import { Ship } from '../types';
 import { mockShips } from '../data/mockData';
 import { ThemeToggle } from './ThemeToggle';
-import { useNavigate } from 'react-router-dom';
 
 interface SwipeScreenProps {
    onMatch: (shipId: string) => void;

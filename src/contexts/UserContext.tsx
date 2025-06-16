@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { User } from '../types';
 
 interface UserContextType {
@@ -12,13 +12,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const useUser = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
-  return context;
-};
+export { UserContext };
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -43,7 +37,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const savedToken = localStorage.getItem('shipmatch-token');
       if (savedToken && !user) {
         try {
-          const response = await fetch('http://localhost:3001/api/auth/me', {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
             headers: {
               'Authorization': `Bearer ${savedToken}`
             }

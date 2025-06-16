@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Ship, Users, TrendingUp, MapPin, Calendar, Anchor } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../contexts/useUser';
 
 interface DashboardProps {
   onNavigate: (screen: string) => void;
@@ -32,7 +32,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     const fetchStats = async () => {
       try {
         console.log(user.type);
-        const res = await fetch(`http://localhost:3001/api/auth/dashboard/${user.type}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/dashboard/${user.type}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

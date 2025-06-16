@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Anchor, Mail, Lock, ArrowRight } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../contexts/useUser';
 
 interface LoginScreenProps {
   onLogin: (userType: 'charterer' | 'shipowner') => void;
@@ -22,7 +22,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -41,8 +41,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       // Call onLogin to trigger navigation
       onLogin(data.user.type);
 
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError(String(error));
+      }
     } finally {
       setIsLoading(false);
     }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LoginScreen } from './components/LoginScreen';
 import { Dashboard } from './components/Dashboard';
 import { SwipeScreen } from './components/SwipeScreen';
@@ -7,7 +7,8 @@ import { MapScreen } from './components/MapScreen';
 import { ShipDetailScreen } from './components/ShipDetailScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { UserProvider, useUser } from './contexts/UserContext';
+import { UserProvider } from './contexts/UserContext';
+import { useUser } from './contexts/useUser';
 import { MyShipsScreen } from './components/MyShipsScreen';
 
 type Screen = 'login' | 'dashboard' | 'swipe' | 'matches' | 'map' | 'ship-detail' | 'profile' | 'my-ships';
@@ -15,9 +16,9 @@ type Screen = 'login' | 'dashboard' | 'swipe' | 'matches' | 'map' | 'ship-detail
 function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('login');
   const [matches, setMatches] = useState<string[]>([]);
-  const { user, isAuthenticated } = useUser();
+  const { isAuthenticated } = useUser();
 
-  const handleLogin = (userType: 'charterer' | 'shipowner') => {
+  const handleLogin = () => {
     setCurrentScreen('dashboard');
   };
 
