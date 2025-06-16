@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Ship, Users, TrendingUp, MapPin, Calendar, Anchor } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../contexts/useUser';
 
 interface DashboardProps {
   onNavigate: (screen: string) => void;

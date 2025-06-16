@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Ship, Filter, Search, Anchor } from 'lucide-react';
+import { MapPin, Ship, Filter, Search } from 'lucide-react';
 import { mockShips } from '../data/mockData';
 import { ThemeToggle } from './ThemeToggle';
 

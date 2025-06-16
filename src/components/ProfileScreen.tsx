@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, User, Building, Mail, Bell, Globe, Shield, LogOut, Edit2 } from 'lucide-react';
+import { ArrowLeft, User, Building, Bell, Globe, Shield, LogOut, Edit2 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../contexts/useUser';
 
 interface ProfileScreenProps {
   onNavigate: (screen: string) => void;
