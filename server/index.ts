@@ -17,10 +17,16 @@ const PORT = process.env.PORT || 3001;
 // Debug middleware
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
+  console.log('Headers:', sanitizeHeaders(req.headers));
   next();
 });
 
+function sanitizeHeaders(headers: Record<string, string | string[] | undefined>): Record<string, string | string[] | undefined> {
+  const sensitiveKeys = ['authorization', 'cookie'];
+  return Object.fromEntries(
+    Object.entries(headers).filter(([key]) => !sensitiveKeys.includes(key.toLowerCase()))
+  );
+}
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com'] 
