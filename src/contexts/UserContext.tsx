@@ -37,7 +37,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const savedToken = localStorage.getItem('shipmatch-token');
       if (savedToken && !user) {
         try {
-          const response = await fetch('http://localhost:3001/api/auth/me', {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
             headers: {
               'Authorization': `Bearer ${savedToken}`
             }

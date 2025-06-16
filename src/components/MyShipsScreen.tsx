@@ -14,7 +14,7 @@ export const MyShipsScreen: React.FC<MyShipsScreenProps> = () => {
    useEffect(() => {
     if (!user || !token) return;
 
-    fetch(`http://localhost:3001/api/ships/my/ships`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/ships/my/ships`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

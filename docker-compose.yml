@@ -4,53 +4,74 @@ services:
   front:
     build:
       context: .
-      dockerfile: Dockerfile
-    working_dir: /app
-    entrypoint: sh -c "npm install && npm run dev:client"
+      dockerfile: Dockerfile.front
     ports:
       - "5173:5173"
     environment:
       - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8080
     volumes:
       - ./:/app
       - /app/node_modules
     depends_on:
-      - back
+      back:
+        condition: service_healthy
 
   back:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./server
+      dockerfile: ../Dockerfile
     working_dir: /app
-    entrypoint: sh -c "npm install && npm run build:server && node dist/server/index.js"
     ports:
       - "3001:3001"
+    entrypoint: sh -c "npx ts-node scripts/setup-db.ts && npx ts-node scripts/seed-db.ts && npx nodemon"
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/dockitback
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://shipmatch_user:shipmatch@db:5432/shipmatch
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_NAME=dockitback
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_USER=shipmatch_user
+      - DB_PASSWORD=shipmatch
+      - DB_NAME=shipmatch
       - JWT_SECRET=your_super_secret_key
     volumes:
-      - ./:/app
-      - /app/node_modules
+      - ./server:/app
+      - ./server/nodemon.json:/app/nodemon.json
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   db:
     image: postgres:15-alpine
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=dockitback
+      POSTGRES_USER: shipmatch_user
+      POSTGRES_PASSWORD: shipmatch
+      POSTGRES_DB: shipmatch
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shipmatch_user -d shipmatch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
+
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "8080:8080"
+    depends_on:
+      - back
 
 volumes:
   postgres_data: 

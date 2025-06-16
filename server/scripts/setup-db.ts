@@ -1,4 +1,4 @@
-import pool from '../config/database.js';
+import pool from '../config/database';
 
 const createTables = async () => {
   try {
@@ -63,29 +63,18 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS matches (
         id SERIAL PRIMARY KEY,
         ship_id INTEGER REFERENCES ships(id) ON DELETE CASCADE,
-        cargo_id INTEGER REFERENCES cargos(id) ON DELETE SET NULL,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'negotiating', 'confirmed')),
+        status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'accepted', 'negotiating', 'confirmed')),
         matched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(ship_id, user_id)
       )
     `);
 
-    // Create indexes for better performance
-    await pool.query(`
-      CREATE INDEX IF NOT EXISTS idx_ships_type ON ships(type);
-      CREATE INDEX IF NOT EXISTS idx_ships_dwt ON ships(dwt);
-      CREATE INDEX IF NOT EXISTS idx_ships_port ON ships(current_port);
-      CREATE INDEX IF NOT EXISTS idx_ships_owner ON ships(owner_id);
-      CREATE INDEX IF NOT EXISTS idx_matches_user ON matches(user_id);
-      CREATE INDEX IF NOT EXISTS idx_matches_ship ON matches(ship_id);
-    `);
-
     console.log('✅ Database tables created successfully!');
-    
   } catch (error) {
-    console.error('❌ Error setting up database:', error);
+    console.error('❌ Error setting up database tables:', error);
     throw error;
   }
 };
@@ -93,10 +82,10 @@ const createTables = async () => {
 // Run setup
 createTables()
   .then(() => {
-    console.log('🎉 Database setup completed!');
+    console.log('✨ Setup completed!');
     process.exit(0);
   })
   .catch((error) => {
-    console.error('💥 Database setup failed:', error);
+    console.error('💥 Setup failed:', error);
     process.exit(1);
-  });
+  }); 

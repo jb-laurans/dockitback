@@ -1,24 +1,3 @@
-# Build stage
-FROM node:20-alpine as build
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the application (front)
-RUN npm run build
-
-# Build the server (back)
-RUN npm run build:server
-
-# Production stage
 FROM node:20-alpine
 
 WORKDIR /app
@@ -26,17 +5,26 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm ci --only=production
+# Install dependencies
+RUN npm install
 
-# Copy built assets from build stage
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/server ./server
+# Copy source code
+COPY . ./server
 
-# Expose the port the app runs on
+# Install netcat for healthcheck
+RUN apk add --no-cache netcat-openbsd
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV DB_HOST=db
+ENV DB_PORT=5432
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD nc -z db 5432 || exit 1
+
+# Expose port
 EXPOSE 3001
 
-# Start the compiled server
-CMD ["node", "dist/server/index.js"]
-
-# Pas d'ENTRYPOINT ni de script custom, la commande est gérée par docker-compose 
+# Start the server
+CMD ["npx", "nodemon"] 
