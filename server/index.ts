@@ -56,7 +56,7 @@ app.use('*', (req: Request, res: Response) => {
 });
 
 // Global error handler
-app.use((error: unknown, req: Request, res: Response) => {
+app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   console.error('Global error handler:', error);
   const err = error as { status?: number; message?: string; stack?: string };
   res.status(err.status || 500).json({
