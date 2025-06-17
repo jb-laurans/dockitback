@@ -165,9 +165,40 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Actions */}
-        {/* (Start Swiping + Explore Map) -- inchangé */}
+       {/* Action cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-xl p-8 text-white">
+            <h3 className="text-2xl font-bold mb-4">Start Matching</h3>
+            <p className="mb-6 opacity-90">
+              {user.type === 'shipowner' 
+                ? 'Discover new cargo opportunities and connect with charterers'
+                : 'Find the perfect vessels for your cargo requirements'
+              }
+            </p>
+            <button
+              onClick={() => onNavigate('swipe')}
+              className="bg-white text-blue-600 dark:text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-100 transition-colors"
+            >
+              Start Swiping
+            </button>
+          </div>
+
+          <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-600 dark:to-cyan-700 rounded-xl p-8 text-white">
+            <h3 className="text-2xl font-bold mb-4">Explore Map</h3>
+            <p className="mb-6 opacity-90">
+              View real-time vessel positions and port activities worldwide
+            </p>
+            <button
+              onClick={() => onNavigate('map')}
+              className="bg-white text-cyan-600 dark:text-cyan-700 px-6 py-3 rounded-lg font-semibold hover:bg-cyan-50 dark:hover:bg-gray-100 transition-colors flex items-center gap-2"
+            >
+              <MapPin className="w-5 h-5" />
+              Open Map
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+
